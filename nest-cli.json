@@ -10,31 +10,13 @@
   "monorepo": true,
   "root": "apps/uber-services",
   "projects": {
-    "uber-services": {
+    "auth-service": {
       "type": "application",
-      "root": "apps/uber-services",
+      "root": "apps/auth-service",
       "entryFile": "main",
-      "sourceRoot": "apps/uber-services/src",
+      "sourceRoot": "apps/auth-service/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/uber-services/tsconfig.app.json"
-      }
-    },
-    "rider-service": {
-      "type": "application",
-      "root": "apps/rider-service",
-      "entryFile": "main",
-      "sourceRoot": "apps/rider-service/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/rider-service/tsconfig.app.json"
-      }
-    },
-    "logging": {
-      "type": "application",
-      "root": "apps/logging",
-      "entryFile": "main",
-      "sourceRoot": "apps/logging/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/logging/tsconfig.app.json"
+        "tsConfigPath": "apps/auth-service/tsconfig.app.json"
       }
     }
   }
