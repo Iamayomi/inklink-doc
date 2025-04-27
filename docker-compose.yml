@@ -1,5 +1,21 @@
 services:
-  mongo:
+  users-service:
+    build:
+      context: .
+      dockerfile: ./apps/user-service/Dockerfile
+      target: development
+    command: yarn start:dev user-service
+    env_file:
+      - ./apps/user-service/.env
+    depends_on:
+      - user-mongo
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '8000:8000'
+
+  user-mongo:
     image: mongo:latest
     restart: always
     environment:
@@ -31,5 +47,5 @@ networks:
     driver: bridge
 
 volumes:
-  mongo-data:/data/db:
-  redis-data:/data:
+  mongo-data:
+  redis-data:

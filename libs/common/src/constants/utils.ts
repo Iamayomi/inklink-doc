@@ -1,4 +1,16 @@
+import { generateDays, generateHours, generateMinutes } from 'libs/utils';
+
 export const APP_NAME = 'InkLink-Doc';
+
+/** Time in `minute`, ` hour` and `day` expressed in `milliseconds` */
+export const TIME_IN = {
+  /** Time in `minutes` expressed in `milliseconds` */
+  minutes: generateMinutes(),
+  /** Time in `hours` expressed in `milliseconds` */
+  hours: generateHours(),
+  /** Time in `days` expressed in `milliseconds` */
+  days: generateDays(),
+};
 
 export const PROFILE_IMGS_NAME_LIST = [
   'Garfield',

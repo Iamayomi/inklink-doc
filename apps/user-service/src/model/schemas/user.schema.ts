@@ -2,10 +2,18 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { getRandomAvatarUrl } from 'libs/utils';
 import { AbstractDocument } from 'yes/common';
+import * as randomize from 'randomatic';
+import * as argon2 from 'argon2';
+import { isEmail } from 'class-validator';
 
 @Schema({ timestamps: true })
 export class User extends AbstractDocument {
-  @Prop({ required: true, unique: true, lowercase: true, trim: true })
+  @Prop({
+    required: true,
+    unique: true,
+    trim: true,
+    validate: [isEmail, '`{VALUE}` is not a valid email!'],
+  })
   email: string;
 
   @Prop({ required: false }) // Password is optional for OAuth users
@@ -15,10 +23,10 @@ export class User extends AbstractDocument {
   name: string;
 
   @Prop({ default: getRandomAvatarUrl() })
-  avatarUrl: string;
+  avatarUrl?: string;
 
   @Prop({ enum: ['admin', 'user'], default: 'user' })
-  role: string;
+  role?: string;
 
   @Prop({
     type: [
@@ -31,7 +39,7 @@ export class User extends AbstractDocument {
     ],
     default: [],
   })
-  oauth: {
+  oauth?: {
     provider: string;
     accessToken: string;
     refreshToken: string;
@@ -39,7 +47,7 @@ export class User extends AbstractDocument {
   }[];
 
   @Prop({ default: false })
-  twoFactorEnabled: boolean;
+  twoFactorEnabled?: boolean;
 
   @Prop()
   twoFactorSecret?: string;
@@ -48,11 +56,23 @@ export class User extends AbstractDocument {
   lastLogin?: Date;
 
   @Prop({ default: true })
-  isActive: boolean;
+  isActive?: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
-UserSchema.index({ email: 1 }, { unique: true });
+UserSchema.pre('save', async function (next) {
+  if (this.isNew) this.password = await argon2.hash(this.password);
+
+  next();
+});
+
+UserSchema.methods.verifyPassword = async function (password: string) {
+  return await argon2.verify(this.password, password);
+};
+
+export const makeUsernameFromEmail = (email: string) =>
+  `${email.split('@')[0]}${randomize('0', 4)}`;
+
 UserSchema.index({ role: 1 });
 UserSchema.index({ 'oauth.provider': 1 });
