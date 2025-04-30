@@ -1,13 +1,12 @@
 // apps/auth-service/src/schemas/user.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { getRandomAvatarUrl } from 'libs/utils';
-import { AbstractDocument } from 'yes/common';
 import * as randomize from 'randomatic';
 import * as argon2 from 'argon2';
 import { isEmail } from 'class-validator';
 
 @Schema({ timestamps: true })
-export class User extends AbstractDocument {
+export class User {
   @Prop({
     required: true,
     unique: true,
@@ -19,8 +18,8 @@ export class User extends AbstractDocument {
   @Prop({ required: false }) // Password is optional for OAuth users
   password?: string;
 
-  @Prop({ required: true })
-  name: string;
+  @Prop({ required: false })
+  name?: string;
 
   @Prop({ default: getRandomAvatarUrl() })
   avatarUrl?: string;
@@ -28,29 +27,26 @@ export class User extends AbstractDocument {
   @Prop({ enum: ['admin', 'user'], default: 'user' })
   role?: string;
 
-  @Prop({
-    type: [
-      {
-        provider: String,
-        accessToken: String,
-        refreshToken: String,
-        expiresAt: Date,
-      },
-    ],
-    default: [],
-  })
-  oauth?: {
-    provider: string;
-    accessToken: string;
-    refreshToken: string;
-    expiresAt: Date;
-  }[];
-
-  @Prop({ default: false })
-  twoFactorEnabled?: boolean;
-
   @Prop()
-  twoFactorSecret?: string;
+  isEmailVerified: boolean;
+
+  // @Prop({
+  //   type: [
+  //     {
+  //       provider: String,
+  //       accessToken: String,
+  //       refreshToken: String,
+  //       expiresAt: Date,
+  //     },
+  //   ],
+  //   default: [],
+  // })
+  // oauth?: {
+  //   provider: string;
+  //   accessToken: string;
+  //   refreshToken: string;
+  //   expiresAt: Date;
+  // }[];
 
   @Prop()
   lastLogin?: Date;
@@ -62,9 +58,9 @@ export class User extends AbstractDocument {
 export const UserSchema = SchemaFactory.createForClass(User);
 
 UserSchema.pre('save', async function (next) {
-  if (this.isNew) this.password = await argon2.hash(this.password);
+  if (!this.isModified('password')) return next();
 
-  next();
+  this.password = await argon2.hash(this.password);
 });
 
 UserSchema.methods.verifyPassword = async function (password: string) {

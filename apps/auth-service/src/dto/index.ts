@@ -6,7 +6,7 @@ import {
   IsStrongPassword,
 } from 'class-validator';
 
-export class RegisterDto {
+export class CreateUserDto {
   @IsEmail()
   email: string;
 
@@ -18,10 +18,6 @@ export class RegisterDto {
   @IsString()
   @IsOptional() // This makes the field optional if you don’t want to always require it
   role?: string; // Optional field
-
-  // @IsString()
-  // @IsOptional() // Optional as well
-  // avatarUrl?: string; // Optional field
 }
 
 export class LoginDto {

@@ -30,8 +30,8 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
 
   public async findOne(
     filterQuery: FilterQuery<TDocument>,
-    _p0: {},
-    _p1: { lean: boolean },
+    _p0?: {},
+    _p1?: { lean: boolean },
   ): Promise<TDocument> {
     const doc = await this.findOne(filterQuery, {}, { lean: true });
 
@@ -74,8 +74,8 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
 
   public async find(
     filterQuery: FilterQuery<TDocument>,
-    _p0: {},
-    _p1: { lean: boolean },
+    _p0?: {},
+    _p1?: { lean: boolean },
   ): Promise<TDocument> {
     return await this.find(filterQuery, {}, { lean: true });
   }
